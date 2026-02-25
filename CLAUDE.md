@@ -66,8 +66,8 @@ radio = uv5r.BaofengBFF8HPRadio(None)
 radio.load_mmap("radio_image.img")
 s = radio._memobj.settings
 s.voice = 1      # 0=Off, 1=English, 2=Chinese
-s.mdfa = 2       # VFO A display: 0=Frequency, 1=Channel#, 2=Name
-s.mdfb = 2       # VFO B display: 0=Frequency, 1=Channel#, 2=Name
+s.mdfa = 1       # VFO A display: 0=Channel#, 1=Name, 2=Frequency
+s.mdfb = 1       # VFO B display: 0=Channel#, 1=Name, 2=Frequency
 s.squelch = 4    # 0-9
 s.beep = 1       # 0=Off, 1=On
 s.abr = 3        # Backlight timeout in seconds (0=off)
