@@ -1,0 +1,15 @@
+# CHIRP source checkout (clone separately: git clone https://github.com/kk7ds/chirp.git chirp-src)
+chirp-src/
+
+# Radio image files (binary, machine-specific)
+*.img
+
+# Diagnostic/debugging scripts (superseded by flash_chirp.py)
+fix_settings.py
+read_settings.py
+restore_and_flash.py
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
