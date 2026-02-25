@@ -1,0 +1,604 @@
+================================================================================
+  MENLO PARK / SAN MATEO COUNTY PUBLIC SAFETY RADIO FREQUENCY REFERENCE
+  For Baofeng UV-5R and Compatible Dual-Band Radios
+  Compiled: February 2026
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+  1. Important Notes & Baofeng Limitations
+  2. Radio Hardware Recommendations
+  3. CHIRP Programming Guide
+  4. Menlo Park PD
+  5. Atherton PD
+  6. East Palo Alto PD
+  7. San Mateo County Sheriff
+  8. Other San Mateo County Police Departments
+  9. Menlo Park Fire Protection District / SMC Fire South
+ 10. San Mateo County Fire (All Zones)
+ 11. CalFire - San Mateo/Santa Cruz (CZU) Unit
+ 12. CHP - Golden Gate Division
+ 13. NOAA Weather Radio
+ 14. National Interoperability Channels
+ 15. California Mutual Aid (CLEMARS/CALCORD)
+ 16. FRS/GMRS Channels
+ 17. MURS Frequencies
+ 18. P25 Trunked System Notes
+
+================================================================================
+1. IMPORTANT NOTES & BAOFENG LIMITATIONS
+================================================================================
+
+LEGAL NOTICE: This document is for RECEIVE-ONLY (scanner) use on public safety
+frequencies. Transmitting on public safety, government, or other licensed
+frequencies without authorization is a federal crime (47 USC 333). The Baofeng
+is being used here as a scanner/receiver only for those bands.
+
+BAOFENG FREQUENCY RANGE:
+  - VHF: 136-174 MHz (some models extend to 65-108 MHz FM broadcast RX)
+  - UHF: 400-520 MHz
+  - The UV-5R CANNOT receive:
+    * Low band VHF (30-50 MHz) - CHP frequencies at 42 MHz are OUT OF RANGE
+    * 700 MHz band - P25 trunked system frequencies are OUT OF RANGE
+    * 800 MHz band - 8TAC/8CALL interop channels are OUT OF RANGE
+    * 900 MHz band
+
+BAOFENG MODULATION:
+  - Receives analog FM and NFM only
+  - CANNOT decode P25 digital, DMR, NXDN, or other digital modes
+  - CANNOT track trunked radio systems
+
+WHAT YOU CAN ACTUALLY HEAR:
+  - VHF fire dispatch/tactical (153-156 MHz) -- BEST results
+  - CalFire operations (151 MHz range) -- BEST results
+  - UHF police conventional channels (460-490 MHz) -- GOOD results
+  - National interop channels (VHF and UHF) -- GOOD results
+  - NOAA Weather (162 MHz) -- GOOD results
+  - FRS/GMRS/MURS -- GOOD results
+  - CHP (42 MHz) -- NOT receivable on Baofeng
+
+NOTE ON POLICE: Many San Mateo County PD agencies still use analog conventional
+UHF frequencies in the 480-490 MHz range for primary dispatch. However, the
+county has a 700 MHz P25 trunked system that the Sheriff and some agencies use.
+The conventional UHF frequencies listed here were confirmed active as of late
+2024/early 2025 per RadioReference databases. Some agencies may have migrated
+further to P25 since then. If a channel is silent, the agency may have moved
+to the P25 system.
+
+================================================================================
+2. RADIO HARDWARE RECOMMENDATIONS
+================================================================================
+
+RECOMMENDED BAOFENG MODELS (best to least):
+
+  BF-F8HP (8 watt)
+    - Best Baofeng for scanning; improved front-end filtering
+    - 8W max TX power (irrelevant for RX-only use, but better build)
+    - Better receiver sensitivity than UV-5R
+    - ~$60-70
+
+  UV-82HP (8 watt)
+    - Dual PTT button design
+    - Good receiver, comparable to BF-F8HP
+    - ~$40-50
+
+  UV-5R / UV-5R Plus
+    - The classic, cheapest option
+    - Adequate receiver for nearby transmitters
+    - ~$25-35
+
+  UV-5X3 (Tri-band)
+    - Adds 220 MHz band (1.25m)
+    - No advantage for public safety scanning
+    - ~$50
+
+ACCESSORIES:
+  - Nagoya NA-771 antenna (significant improvement over stock antenna)
+  - Programming cable (Baofeng/FTDI USB cable for CHIRP)
+  - CHIRP software: https://chirpmyradio.com (free, open source)
+
+FOR SERIOUS SCANNING, CONSIDER INSTEAD:
+  - Uniden SDS100 or SDS200 -- full P25 Phase I/II, trunking capable
+  - Whistler TRX-1 or TRX-2 -- P25 capable
+  - RTL-SDR dongle + SDR# or Trunk-Recorder -- widest coverage
+
+================================================================================
+3. CHIRP PROGRAMMING GUIDE
+================================================================================
+
+A CHIRP-compatible CSV file has been generated:
+  menlo_park_area_frequencies.csv
+
+To import into CHIRP:
+  1. Download CHIRP from https://chirpmyradio.com
+  2. Connect Baofeng with programming cable
+  3. Radio > Download From Radio (to get current image)
+  4. File > Import (select the CSV file)
+  5. Select channels to import, click OK
+  6. Radio > Upload To Radio
+
+CSV COLUMN DEFINITIONS:
+  Location    = Channel number (0-127 for UV-5R)
+  Name        = 6-character alpha tag (UV-5R limit)
+  Frequency   = RX frequency in MHz
+  Duplex      = blank=simplex, +=positive offset, -=negative offset
+  Offset      = Offset in MHz (0 for simplex)
+  Tone        = Tone mode: (blank), Tone, TSQL, DTCS
+  rToneFreq   = TX CTCSS tone (for Tone mode)
+  cToneFreq   = RX CTCSS tone (for TSQL mode)
+  DtcsCode    = DCS code
+  DtcsPolarity= DCS polarity (NN, NR, RN, RR)
+  Mode        = FM or NFM
+  TStep       = Tuning step in kHz
+  Skip        = S=skip in scan, blank=include
+  Comment     = Description (not stored in radio)
+
+================================================================================
+4. MENLO PARK PD
+================================================================================
+
+Menlo Park PD operates on conventional analog UHF.
+
+Ch  Frequency    Name      PL Tone   Mode  Type      Notes
+--  -----------  --------  --------  ----  --------  -------------------------
+0   488.3375     MP-PD     162.2     FM    Repeater  Primary Dispatch
+
+Note: Menlo Park PD may also use the SMC P25 trunked system for some
+operations. The 488.3375 MHz frequency with 162.2 PL has been the
+conventional dispatch channel. Monitor for activity; if silent, the
+department may have transitioned more operations to P25.
+
+================================================================================
+5. ATHERTON PD
+================================================================================
+
+Atherton PD operates on conventional analog UHF. Atherton is dispatched
+by the San Mateo County Sheriff's Communications Center.
+
+Ch  Frequency    Name      PL Tone   Mode  Type      Notes
+--  -----------  --------  --------  ----  --------  -------------------------
+1   489.0875     ATH-PD    162.2     FM    Repeater  Primary Dispatch
+
+Note: This frequency is shared with Burlingame PD (different PL tone: 114.8).
+Atherton uses 162.2 PL to differentiate.
+
+================================================================================
+6. EAST PALO ALTO PD
+================================================================================
+
+East Palo Alto PD operates on conventional analog UHF.
+
+Ch  Frequency    Name      PL Tone   Mode  Type      Notes
+--  -----------  --------  --------  ----  --------  -------------------------
+2   488.3875     EPA-PD    114.8     FM    Repeater  Primary Dispatch
+
+Note: This frequency (488.3875) is also used by Brisbane PD (162.2 PL)
+and Half Moon Bay PD (173.8 PL). Different PL tones differentiate agencies.
+
+================================================================================
+7. SAN MATEO COUNTY SHERIFF
+================================================================================
+
+The Sheriff primarily operates on the 700 MHz P25 trunked system (System ID
+38D), which the Baofeng CANNOT decode. However, the county maintains analog
+mutual aid/tactical channels that all law enforcement agencies can access:
+
+Ch  Frequency    Name       PL Tone   Mode  Type      Notes
+--  -----------  ---------  --------  ----  --------  -------------------------
+3   488.8875     SMSO-GRN   114.8     FM    Repeater  Countywide GREEN
+4   488.8625     SMSO-T1N   114.8     FM    Repeater  Tac 1 North
+5   488.7125     SMSO-T2C   114.8     FM    Repeater  Tac 2 Central
+6   488.5375     SMSO-T3S   114.8     FM    Repeater  Tac 3 South
+7   460.0250     SMSO-C2C   114.8     NFM   Simplex   Car-to-Car
+8   484.4875     SMSO-ALT   114.8     FM    Repeater  Alternate/Tactical
+
+P25 TRUNKED SYSTEM (CANNOT be received on Baofeng):
+  System: San Mateo County P25 Regional Communications System
+  Type: Project 25 Phase I, APCO-25 CAI
+  Band: 769-774 MHz (700 MHz public safety band)
+  Sites: Brisbane, Towne Ridge, Countywide Simulcast, Pigeon Point,
+         Pescadero, Point Montara, La Honda
+  Agencies: Sheriff, County EMS, Daly City PD, San Bruno PD, SamTrans,
+            County OES, Parks, Public Works
+  Talkgroups: 100+ organized by department
+
+================================================================================
+8. OTHER SAN MATEO COUNTY POLICE DEPARTMENTS
+================================================================================
+
+These are conventional analog UHF frequencies. All are repeater outputs.
+Listed roughly north to south for geographic reference.
+
+Ch   Frequency    Name       PL Tone   Mode  Notes
+---  -----------  ---------  --------  ----  ----------------------------
+115  488.9375     DLYCY-PD   162.2     FM    Daly City PD Dispatch
+125  482.5625     BRDMR-PD   114.8     FM    Broadmoor PD Dispatch
+123  490.9125     COLMA-PD   167.9     FM    Colma PD Dispatch
+120  488.4625     SSF-PD1    114.8     FM    South San Francisco PD Dispatch
+121  490.5875     SSF-PD2    114.8     FM    South San Francisco PD Sec.
+122  490.5375     SNBRN-PD   167.9     FM    San Bruno PD Dispatch
+124  489.1375     MLLBR-PD   114.8     FM    Millbrae PD Dispatch
+114  489.0875     BRLNG-PD   114.8     FM    Burlingame PD Dispatch
+12   488.3375     HILL-PD1   114.8     FM    Hillsborough PD North
+13   484.8625     HILL-PD2   114.8     FM    Hillsborough PD South
+118  488.3125     SNMTO-P1   114.8     FM    San Mateo PD Dispatch
+119  482.9875     SNMTO-P2   114.8     FM    San Mateo PD Tactical
+116  488.6125     FSTCY-PD   162.2     FM    Foster City PD Dispatch
+113  488.4875     BLMNT-PD   162.2     FM    Belmont PD Dispatch
+112  482.5000     BRSBN-PD   123.0     NFM   Brisbane PD Dispatch
+9    483.4125     RWC-PD1    186.2     FM    Redwood City PD Dispatch
+10   488.7875     RWC-PD2    162.2     FM    Redwood City PD Secondary
+11   484.4875     RWC-PD3    114.8     FM    Redwood City PD Tactical
+117  488.7375     PCFCA-PD   162.2     FM    Pacifica PD Dispatch
+126  488.3875     HMB-PD     173.8     FM    Half Moon Bay PD Dispatch
+
+================================================================================
+9. MENLO PARK FIRE PROTECTION DISTRICT / SMC FIRE SOUTH
+================================================================================
+
+The Menlo Park Fire Protection District is dispatched on the San Mateo
+County Fire SOUTH zone. These are VHF frequencies -- excellent for Baofeng
+reception.
+
+Ch  Frequency    Name       PL Tone   Mode  Type      Notes
+--  -----------  ---------  --------  ----  --------  -------------------------
+14  153.8900     SMCF-S1A   114.8     NFM   Repeater  South Dispatch Ctrl 1A **
+15  154.3700     SMCF-SC1   114.8     NFM   Repeater  South Command 11
+16  154.0400     SMCF-ST5   118.8     NFM   Repeater  South Tactical 15
+17  154.0100     SMCF-ST6   110.9     NFM   Repeater  South Tactical 16
+18  155.4000     SMCF-ST7   141.3     NFM   Repeater  South Tactical 17
+
+** Channel 14 (153.890 MHz / 114.8 PL) is the PRIMARY dispatch channel for
+   Menlo Park Fire. This is where you will hear initial dispatch tones and
+   incident assignments for Menlo Park, Atherton, East Palo Alto, and other
+   South Zone communities.
+
+================================================================================
+10. SAN MATEO COUNTY FIRE (ALL ZONES)
+================================================================================
+
+San Mateo County Fire is organized into four dispatch zones plus a county
+command channel. All VHF, all receivable on Baofeng.
+
+--- SOUTH ZONE (Menlo Park, Atherton, EPA, Redwood City area) ---
+Ch  Frequency    Name       PL Tone   Mode  Notes
+--  -----------  ---------  --------  ----  ----------------------------
+14  153.8900     SMCF-S1A   114.8     NFM   South Dispatch Control 1A
+15  154.3700     SMCF-SC1   114.8     NFM   South Command 11
+16  154.0400     SMCF-ST5   118.8     NFM   South Tactical 15
+17  154.0100     SMCF-ST6   110.9     NFM   South Tactical 16
+18  155.4000     SMCF-ST7   141.3     NFM   South Tactical 17
+
+--- CENTRAL ZONE (San Mateo, Belmont, Foster City area) ---
+Ch  Frequency    Name       PL Tone   Mode  Notes
+--  -----------  ---------  --------  ----  ----------------------------
+19  153.7850     SMCF-C2    156.7     NFM   Central Dispatch Control 2
+20  153.9500     SMCF-CC1   114.8     NFM   Central Command 21
+21  154.1450     SMCF-CT5   118.8     NFM   Central Tactical 25
+22  153.8300     SMCF-CT6   110.9     NFM   Central Tactical 26
+23  155.7450     SMCF-CT7   162.2     NFM   Central Tactical 27
+
+--- NORTH ZONE (Daly City, South San Francisco, San Bruno area) ---
+Ch  Frequency    Name       PL Tone   Mode  Notes
+--  -----------  ---------  --------  ----  ----------------------------
+24  154.1000     SMCF-N3    114.8     NFM   North Dispatch Control 3
+25  151.0850     SMCF-NC1   123.0     NFM   North Command 31
+26  154.0100     SMCF-NT5   118.8     NFM   North Tactical 35
+27  154.0400     SMCF-NT6   162.2     NFM   North Tactical 36
+28  155.4000     SMCF-NT7   107.2     NFM   North Tactical 37
+
+--- COAST ZONE (Half Moon Bay, La Honda, Pescadero area) ---
+Ch  Frequency    Name       PL Tone   Mode  Notes
+--  -----------  ---------  --------  ----  ----------------------------
+29  154.3400     SMCF-CST   114.8     NFM   Coast Dispatch 1B (HMB)
+30  154.1450     SMCF-C1C   114.8     NFM   Coast 1C (Pigeon Point)
+31  154.2350     SMCF-C1D   114.8     NFM   Coast 1D (La Honda)
+32  151.0850     SMCF-C1E   114.8     NFM   Coast 1E (Pescadero)
+33  155.8950     SMCF-CSC   114.8     NFM   Coast Command 41
+34  153.8300     SMCF-CT4   141.3     NFM   Coast Tactical 45
+35  154.4450     SMCF-CT4   146.2     NFM   Coast Tactical 46
+36  155.7450     SMCF-CT4   123.0     NFM   Coast Tactical 47
+
+--- COUNTYWIDE ---
+Ch  Frequency    Name       PL Tone   Mode  Notes
+--  -----------  ---------  --------  ----  ----------------------------
+37  151.4750     SMCF-CW5   167.9     NFM   County Command 51
+
+================================================================================
+11. CALFIRE - SAN MATEO/SANTA CRUZ (CZU) UNIT
+================================================================================
+
+CalFire CZU is headquartered in Felton and covers San Mateo and Santa Cruz
+counties. These are VHF frequencies, all receivable on Baofeng.
+
+Ch  Frequency    Name       PL Tone   Mode  Type     Notes
+--  -----------  ---------  --------  ----  -------  -------------------------
+38  151.3700     CF-CZU     167.9     NFM   Simplex  CZU Local Net (Felton ECC)
+39  151.3550     CF-CMD1    103.5     NFM   Simplex  Command 1 Statewide
+40  151.2650     CF-CMD2    103.5     NFM   Simplex  Command 2 Statewide
+41  151.1600     CF-TAC2    192.8     NFM   Simplex  Ground Tactical 2
+42  151.1750     CF-TAC3    192.8     NFM   Simplex  Ground Tactical 3
+43  151.3250     CF-TAC6    192.8     NFM   Simplex  Ground Tactical 6
+44  151.4000     CF-TAC10   192.8     NFM   Simplex  Ground Tactical 10
+
+Additional CalFire frequencies of interest (not in CSV due to channel limits):
+  151.2575 MHz  Tac 1    192.8 PL   Ground Tactical
+  151.2800 MHz  AirTac4  110.9 PL   Air Tactical
+  151.2950 MHz  AirTac5  110.9 PL   Air Tactical
+  151.3100 MHz  AirTac6  110.9 PL   Air Tactical
+  151.2200 MHz  AirGnd1  192.8 PL   Air to Ground
+  159.2625 MHz  AirGnd2  192.8 PL   Air to Ground
+
+================================================================================
+12. CHP - GOLDEN GATE DIVISION
+================================================================================
+
+*** WARNING: CHP uses LOW BAND VHF (42 MHz range) which is BELOW the Baofeng
+    receive range. You CANNOT receive CHP on a UV-5R or any standard Baofeng. ***
+
+For reference only (requires a scanner capable of 30-50 MHz):
+
+Office           Color     Base (MHz)  Mobile (MHz)  PL Tone
+---------------  --------  ----------  ------------  -------
+Redwood City     Amber     42.080      42.820        131.8
+San Francisco    Pink      42.440      42.760        131.8
+San Jose         Ruby      42.500      42.280        131.8
+Hayward          Aqua      42.620      42.840        131.8
+Marin            Violet    42.160      42.640        131.8
+Oakland          Bronze    42.120      42.400        131.8
+Contra Costa     Maroon    42.920      42.740        131.8
+Santa Rosa       Emerald   42.880      42.200        131.8
+Napa             Grape     42.420      42.660        131.8
+Solano           Turquoise 42.600      42.020        131.8
+
+CHP also has 700 MHz vehicular repeater channels:
+  769.43125 MHz - Vehicular repeater (simulcast of low band)
+  770.43125 MHz - Golden Gate Bridge simulcast
+  773.83125 MHz - Corte Madera Office simulcast
+  (These are P25 digital and outside Baofeng range)
+
+TO LISTEN TO CHP: Use Broadcastify app/website for live streaming audio,
+or get a scanner that covers 30-50 MHz (e.g., Uniden BC125AT, BC355N).
+
+================================================================================
+13. NOAA WEATHER RADIO
+================================================================================
+
+All Baofeng radios can receive NOAA Weather Radio on VHF. No tone required.
+These are continuous broadcast stations.
+
+Ch  Frequency    Name       Mode  Transmitter        Coverage
+--  -----------  ---------  ----  -----------------  ----------------------
+53  162.4000     WX-SFBA    NFM   KHB49 Mt. Pise     San Francisco Bay Area
+54  162.5500     WX-SJBA    NFM   KEC49 Mt. Umunhum  San Jose / Monterey Bay
+55  162.4500     WX-MARN    NFM   WWF64 Mt. Umunhum  SF/Monterey Bay Marine
+56  162.4250     WX-EBAY    NFM   KZZ75 Mt. Diablo   East Bay
+
+For Menlo Park area: KHB49 on 162.400 MHz is the primary station.
+KEC49 on 162.550 MHz (Mt. Umunhum) is also receivable as a backup.
+
+All seven NOAA Weather frequencies for reference:
+  162.400, 162.425, 162.450, 162.475, 162.500, 162.525, 162.550 MHz
+
+================================================================================
+14. NATIONAL INTEROPERABILITY CHANNELS
+================================================================================
+
+These are federally designated mutual aid channels. VHF channels are receivable
+on Baofeng. All are simplex (no offset).
+
+--- VHF HIGH BAND (Receivable on Baofeng) ---
+
+Ch  Frequency    Name       PL Tone   Mode  Purpose
+--  -----------  ---------  --------  ----  ----------------------------
+57  155.7525     VCALL10    156.7     NFM   National VHF Calling
+58  151.1375     VTAC11     156.7     NFM   VHF Tactical 11
+59  154.4525     VTAC12     156.7     NFM   VHF Tactical 12
+60  158.7375     VTAC13     156.7     NFM   VHF Tactical 13
+61  159.4725     VTAC14     156.7     NFM   VHF Tactical 14
+62  154.2800     VFIRE21    156.7     NFM   Fire Interop 21
+63  154.2650     VFIRE22    156.7     NFM   Fire Interop 22
+64  154.2950     VFIRE23    156.7     NFM   Fire Interop 23
+65  154.2725     VFIRE24    156.7     NFM   Fire Interop 24
+66  154.2875     VFIRE25    156.7     NFM   Fire Interop 25
+67  154.3025     VFIRE26    156.7     NFM   Fire Interop 26
+68  155.4750     VLAW31     156.7     NFM   Law Enforcement 31
+69  155.4825     VLAW32     156.7     NFM   Law Enforcement 32
+70  155.3400     VMED28     156.7     NFM   Medical Interop 28
+71  155.3475     VMED29     156.7     NFM   Medical Interop 29
+127 155.1600     VSAR16     127.3     NFM   Search and Rescue (NATSAR)
+
+--- UHF (Receivable on Baofeng - simplex only, no repeater input) ---
+
+Ch  Frequency    Name       PL Tone   Mode  Purpose
+--  -----------  ---------  --------  ----  ----------------------------
+81  453.2125     UCALL40    156.7     NFM   National UHF Calling
+82  453.4625     UTAC41     156.7     NFM   UHF Tactical 41
+83  453.7125     UTAC42     156.7     NFM   UHF Tactical 42
+84  453.8625     UTAC43     156.7     NFM   UHF Tactical 43
+
+UHF Repeater inputs (for reference, used when repeaters are deployed):
+  UCALL40 input: 458.2125 MHz
+  UTAC41 input:  458.4625 MHz
+  UTAC42 input:  458.7125 MHz
+  UTAC43 input:  458.8625 MHz
+
+--- 800 MHz (NOT receivable on Baofeng) ---
+  8CALL90: 851.0125 / 806.0125 MHz  156.7 PL
+  8TAC91:  851.5125 / 806.5125 MHz  156.7 PL
+  8TAC92:  852.0125 / 807.0125 MHz  156.7 PL
+  8TAC93:  852.5125 / 807.5125 MHz  156.7 PL
+  8TAC94:  853.0125 / 808.5125 MHz  156.7 PL
+
+================================================================================
+15. CALIFORNIA MUTUAL AID (CLEMARS / CALCORD / WHITE FIRE)
+================================================================================
+
+--- CLEMARS (California Law Enforcement Mutual Aid Radio System) ---
+
+Ch  Frequency    Name       PL Tone   Mode  Notes
+--  -----------  ---------  --------  ----  ----------------------------
+73  154.9200     CALAW1     (none)    NFM   CLEMARS Ch1 - Statewide
+74  154.9350     CALAW2     (none)    NFM   CLEMARS Ch2 - Statewide
+75  155.4750     CALAW3     (none)    NFM   CLEMARS Ch3 - Nationwide Law
+76  460.0250     CLMRS-4    (none)    NFM   CLEMARS Ch4/5 - UHF
+77  489.1625     BAYAREA    (none)    FM    CLEMARS Bay Area Ch23/24
+
+Additional CLEMARS (not receivable on Baofeng):
+  39.46 MHz    CLEMARS Ch6/7   (Low Band - below Baofeng range)
+  868.5125 MHz CLEMARS Ch8/9   (800 MHz - above Baofeng range)
+
+--- CALCORD (Fire Coordination) ---
+
+Ch  Frequency    Name       PL Tone   Mode  Notes
+--  -----------  ---------  --------  ----  ----------------------------
+72  156.0750     CALCORD    (none)    NFM   CA Fire Coord - Mobile/Simplex
+
+--- WHITE FIRE (California OES Fire Mutual Aid) ---
+
+Ch  Frequency    Name       PL Tone   Mode  Notes
+--  -----------  ---------  --------  ----  ----------------------------
+78  154.2800     WFIRE1     156.7     NFM   White Fire 1 - Base permitted
+79  154.2650     WFIRE2     156.7     NFM   White Fire 2 - Mobile only
+80  154.2950     WFIRE3     156.7     NFM   White Fire 3 - Mobile only
+
+Note: White Fire 1/2/3 are the same frequencies as VFIRE21/22/23. They are
+the California state designations for the national fire interop channels.
+
+--- OES FIRE COORDINATION ---
+  154.1600 MHz  OES Fire Net (with repeater inputs on 159 MHz)
+  154.2200 MHz  OES Fire Net
+
+--- FIREMARS (not receivable on Baofeng) ---
+  868.9875 MHz  FIREMARS - 800 MHz fire/EMS ops
+  866.9125 MHz  FIREMARS 2 - Northern California
+
+================================================================================
+16. FRS/GMRS CHANNELS
+================================================================================
+
+FRS (Family Radio Service) - No license required, 2W max
+GMRS (General Mobile Radio Service) - FCC license required for >2W
+
+Note: Baofeng radios are NOT FCC Part 95 certified for FRS/GMRS transmit use.
+Listed here for RECEIVE reference only or for use with proper GMRS license
+understanding that the radio itself is not type-accepted for these services.
+
+--- FRS/GMRS SHARED (Ch 1-7) ---
+Ch  Frequency    Name     Mode  FRS Power  GMRS Power
+--  -----------  -------  ----  ---------  ----------
+85  462.5625     FRS-01   NFM   2W         5W
+86  462.5875     FRS-02   NFM   2W         5W
+87  462.6125     FRS-03   NFM   2W         5W
+88  462.6375     FRS-04   NFM   2W         5W
+89  462.6625     FRS-05   NFM   2W         5W
+90  462.6875     FRS-06   NFM   2W         5W
+91  462.7125     FRS-07   NFM   2W         5W
+
+--- FRS ONLY (Ch 8-14, 0.5W max) ---
+Ch  Frequency    Name     Mode  FRS Power
+--  -----------  -------  ----  ---------
+92  467.5625     FRS-08   NFM   0.5W
+93  467.5875     FRS-09   NFM   0.5W
+94  467.6125     FRS-10   NFM   0.5W
+95  467.6375     FRS-11   NFM   0.5W
+96  467.6625     FRS-12   NFM   0.5W
+97  467.6875     FRS-13   NFM   0.5W
+98  467.7125     FRS-14   NFM   0.5W
+
+--- GMRS HIGH POWER (Ch 15-22, up to 50W with license) ---
+Ch   Frequency    Name      Mode  GMRS Power  Notes
+---  -----------  --------  ----  ----------  --------------------
+99   462.5500     GMRS-15   FM    50W         Repeater pair w/ 467.5500
+100  462.5750     GMRS-16   FM    50W         Repeater pair w/ 467.5750
+101  462.6000     GMRS-17   FM    50W         Repeater pair w/ 467.6000
+102  462.6250     GMRS-18   FM    50W         Repeater pair w/ 467.6250
+103  462.6500     GMRS-19   FM    50W         Repeater pair w/ 467.6500
+104  462.6750     GMRS-20   FM    50W         National Calling/Emergency
+105  462.7000     GMRS-21   FM    50W         Repeater pair w/ 467.7000
+106  462.7250     GMRS-22   FM    50W         Repeater pair w/ 467.7250
+
+GMRS Ch 20 (462.675 MHz) is the suggested national calling/traveler
+assistance channel, often used with 141.3 Hz CTCSS tone.
+
+================================================================================
+17. MURS FREQUENCIES
+================================================================================
+
+Multi-Use Radio Service - No license required, 2W max power.
+
+Ch   Frequency    Name     Mode  Bandwidth  Notes
+---  -----------  -------  ----  ---------  -----------------------
+107  151.8200     MURS-1   NFM   11.25 kHz
+108  151.8800     MURS-2   NFM   11.25 kHz
+109  151.9400     MURS-3   NFM   11.25 kHz
+110  154.5700     MURS-4   FM    20 kHz     "Blue Dot"
+111  154.6000     MURS-5   FM    20 kHz     "Green Dot"
+
+MURS supports CTCSS tones (38 available per channel = 190 combinations).
+Commonly used by businesses (retail stores, warehouses) and outdoor recreation.
+Baofeng is NOT type-accepted for MURS transmit, but can receive.
+
+================================================================================
+18. P25 TRUNKED SYSTEM NOTES
+================================================================================
+
+SAN MATEO COUNTY P25 REGIONAL COMMUNICATIONS SYSTEM
+  System Type:  Project 25 Phase I
+  WACN:         BEE00
+  System ID:    38D
+  Band:         769-774 MHz (700 MHz public safety)
+
+Sites:
+  - Brisbane
+  - Towne Ridge
+  - Countywide Simulcast
+  - Pigeon Point
+  - Pescadero
+  - Point Montara
+  - La Honda
+
+Agencies on this system:
+  - San Mateo County Sheriff (patrol, narcotics, vehicle theft, transit,
+    search/rescue, civil, corrections)
+  - County EMS (dispatch, tactical, MCI)
+  - Daly City PD
+  - San Bruno PD
+  - SamTrans (6 talkgroups)
+  - County Public Works
+  - County Parks
+  - County OES
+  - La Honda Volunteer Fire
+  - Peninsula Humane Society
+  - Hospital coordination (8 facilities)
+
+To monitor this system you need a P25-capable scanner such as:
+  - Uniden SDS100 ($600+)
+  - Uniden SDS200 ($700+)
+  - Whistler TRX-1 ($450+)
+  - SDR setup with Trunk-Recorder software (variable cost)
+
+Or use online streaming:
+  - Broadcastify: https://www.broadcastify.com/listen/ctid/223
+  - OpenMHz (if available for this system)
+
+================================================================================
+END OF REFERENCE DOCUMENT
+================================================================================
+
+Sources used in compiling this document:
+  - RadioReference.com (radioreference.com/db/browse/ctid/223)
+  - RadioReference Wiki (wiki.radioreference.com)
+  - W6AER San Mateo County Frequency Guide (w6aer.com)
+  - Broadcastify (broadcastify.com/listen/ctid/223)
+  - ScanCal.org CalFire frequencies (scancal.org/calfire/)
+  - California Fire Fighters scanner freq list (cafirefighters.com/scanner.htm)
+  - NOAA NWR station listing (weather.gov/mtr/nwr)
+  - California OES mutual aid frequencies (qsl.net/n6uru/oesfreqs.htm)
+  - NIFOG National Interoperability (cisa.gov)
+  - HFUnderground interop reference (hfunderground.com)
+  - FCC Part 95 rules (ecfr.gov)
+
+Disclaimer: Frequencies and tones may change over time. Always verify with
+current databases (especially RadioReference.com) before relying on this data.
+Last verified against sources: February 2026.
