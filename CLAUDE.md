@@ -101,9 +101,48 @@ The flash script uses CHIRP's `BaofengBFF8HPRadio` driver. UV-5R radios use the 
 | **CHIRP driver** | `BaofengBFF8HPRadio` | `BaofengUV5RGeneric` |
 | **Firmware ident** | `aa307604000520dd` | varies |
 
-- All channels are set to lowest power (RX-only scanner use)
+- Most channels are set to Low power (scanner/receive use)
+- **FRS 1-7** (ch 85-91) and **GMRS 15-22** (ch 99-106) are set to **High power** for transmit use
 - CSV names are all 6 chars or less so the same file works for both radios
-- To flash a UV-5R, change the driver class in `flash_chirp.py` from `BaofengBFF8HPRadio` to `BaofengUV5RGeneric`
+- `flash_chirp.py` is hardcoded for BF-F8HP. For UV-5R, use `BaofengUV5RGeneric` driver (see UV-5R flashing below)
+- **FRS/GMRS legal notes**: Baofengs are not FCC type-accepted for FRS. GMRS requires an FCC license ($35, no exam, covers family for 10 years)
+
+### Flashing a UV-5R
+
+The UV-5R uses a different CHIRP driver class. The process is the same two-step download/upload, but done inline since `flash_chirp.py` is F8HP-specific:
+
+```python
+import sys, os
+sys.path.insert(0, "chirp-src")
+from chirp.drivers import uv5r
+from chirp import chirp_common
+import serial, csv
+
+# Step 1: Download (radio on, cable connected)
+ser = serial.Serial("COM3", baudrate=9600, bytesize=8, parity="N", stopbits=1, timeout=1)
+radio = uv5r.BaofengUV5RGeneric(ser)
+radio.status_fn = lambda s: print(f"\r  {s.msg} {s.cur}/{s.max}", end="", flush=True)
+radio.sync_in()
+radio.save_mmap("uv5r_image.img")
+ser.close()
+# >>> Power cycle the radio <<<
+
+# Step 2: Patch channels, settings, power levels into image
+radio = uv5r.BaofengUV5RGeneric(None)
+radio.load_mmap("uv5r_image.img")
+# ... program channels from CSV using radio.set_memory() ...
+# ... patch settings (voice, mdfa, mdfb, squelch, beep, abr) ...
+# ... set FRS 1-7 and GMRS 15-22 to high power ...
+radio.save_mmap("uv5r_image.img")
+
+# Step 3: Upload (after power cycle)
+ser = serial.Serial("COM3", baudrate=9600, bytesize=8, parity="N", stopbits=1, timeout=1)
+radio = uv5r.BaofengUV5RGeneric(ser)
+radio.load_mmap("uv5r_image.img")
+radio.sync_out()
+ser.close()
+# >>> Power cycle the radio <<<
+```
 
 ## Channel Layout (128 channels, 0-127)
 
@@ -179,6 +218,13 @@ Columns: `Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCod
 - Download: 0x40-byte blocks
 - Upload: 0x10-byte blocks with checksum
 - Radio must be power-cycled between download and upload sessions
+
+## Radios Flashed
+
+- 1x BF-F8HP (primary, 8W high power)
+- 4x UV-5R (5W high power)
+
+All programmed with identical 128-channel layout, English voice, name display, squelch 4.
 
 ## Sources
 
