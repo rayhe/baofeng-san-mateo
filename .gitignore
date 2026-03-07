@@ -5,6 +5,7 @@ chirp-src/
 radio_image.img
 radio_current.img
 uv5r_image.img
+uv5rmini_image.img
 frequencies_chirp_backup.img
 
 # Diagnostic/debugging scripts (superseded by flash_chirp.py)

@@ -10,11 +10,14 @@ This is a **receive-only / scanner** use case for public safety frequencies. Tra
 
 ```
 frequencies.csv          # CHIRP-compatible CSV, 128 channels (0-127), ready to upload
-flash_chirp.py           # CHIRP-driver-based flasher (working, preferred)
+flash_chirp.py           # CHIRP-driver-based flasher (working, preferred for BF-F8HP)
 flash_radio.py           # Legacy standalone flasher (BUGGY — do not use, see below)
 FREQUENCY_REFERENCE.txt  # Detailed human-readable reference with all frequencies, notes, sources
 README.md                # Project description
 chirp-src/               # CHIRP source checkout (git-ignored, clone separately)
+radio_backup.img         # BF-F8HP backup image (committed)
+uv5r_backup.img          # UV-5R backup image (committed)
+uv5rmini_backup.img      # UV-5R Mini backup image (committed)
 ```
 
 ## Hardware Setup
@@ -90,21 +93,25 @@ The legacy `flash_radio.py` has a critical 8-byte memory address offset bug. CHI
 
 ## Supported Radios
 
-The flash script uses CHIRP's `BaofengBFF8HPRadio` driver. UV-5R radios use the same protocol family but a different CHIRP driver class.
+The flash script uses CHIRP's `BaofengBFF8HPRadio` driver. UV-5R and UV-5R Mini use different CHIRP drivers.
 
-| | BF-F8HP | UV-5R |
-|---|---|---|
-| **Power levels** | 3 (High 8W / Mid 4W / Low 1W) | 2 (High 5W / Low 1W) |
-| **Name length** | 7 characters | 6 characters |
-| **Channels** | 128 (0-127) | 128 (0-127) |
-| **Protocol** | UV-5R family (9600 8N1) | UV-5R family (9600 8N1) |
-| **CHIRP driver** | `BaofengBFF8HPRadio` | `BaofengUV5RGeneric` |
-| **Firmware ident** | `aa307604000520dd` | varies |
+| | BF-F8HP | UV-5R | UV-5R Mini |
+|---|---|---|---|
+| **Power levels** | 3 (High 8W / Mid 4W / Low 1W) | 2 (High 5W / Low 1W) | 2 (High 5W / Low 1W) |
+| **Name length** | 7 characters | 6 characters | 12 characters |
+| **Channels** | 128 (0-127) | 128 (0-127) | 999 (1-999, 1-indexed) |
+| **Baud rate** | 9600 | 9600 | **115200** |
+| **Protocol** | UV-5R family | UV-5R family | UV-17 Pro family |
+| **CHIRP driver** | `BaofengBFF8HPRadio` | `BaofengUV5RGeneric` | `UV5RMini` |
+| **CHIRP driver file** | `chirp/drivers/uv5r.py` | `chirp/drivers/uv5r.py` | `chirp/drivers/baofeng_uv17Pro.py` |
+| **Image size** | ~8KB | ~8KB | ~33KB |
+| **Programming port** | 2-pin Kenwood (FTDI) | 2-pin Kenwood (FTDI) | 2-pin Kenwood (FTDI) |
 
 - Most channels are set to Low power (scanner/receive use)
 - **FRS 1-7** (ch 85-91) and **GMRS 15-22** (ch 99-106) are set to **High power** for transmit use
-- CSV names are all 6 chars or less so the same file works for both radios
+- CSV names are all 6 chars or less so the same file works for both radios (Mini supports up to 12)
 - `flash_chirp.py` is hardcoded for BF-F8HP. For UV-5R, use `BaofengUV5RGeneric` driver (see UV-5R flashing below)
+- **UV-5R Mini note**: USB-C port on the radio is charging only — programming still uses the 2-pin Kenwood FTDI cable
 - **FRS/GMRS legal notes**: Baofengs are not FCC type-accepted for FRS. GMRS requires an FCC license ($35, no exam, covers family for 10 years)
 
 ### Flashing a UV-5R
@@ -139,6 +146,65 @@ radio.save_mmap("uv5r_image.img")
 ser = serial.Serial("COM3", baudrate=9600, bytesize=8, parity="N", stopbits=1, timeout=1)
 radio = uv5r.BaofengUV5RGeneric(ser)
 radio.load_mmap("uv5r_image.img")
+radio.sync_out()
+ser.close()
+# >>> Power cycle the radio <<<
+```
+
+### Flashing a UV-5R Mini
+
+The UV-5R Mini uses a completely different CHIRP driver (`UV5RMini` from `baofeng_uv17Pro.py`), runs at **115200 baud** (not 9600), and has 1-indexed channels (1-999). The serial object also needs a `.log` stub method.
+
+```python
+import sys, os
+sys.path.insert(0, "chirp-src")
+from chirp.drivers import baofeng_uv17Pro
+from chirp import chirp_common
+import serial, csv
+
+# Step 1: Download (radio on, cable connected)
+ser = serial.Serial("COM3", baudrate=115200, bytesize=8, parity="N", stopbits=1, timeout=1)
+ser.log = lambda msg: None  # CHIRP driver calls radio.pipe.log(), Serial doesn't have it
+radio = baofeng_uv17Pro.UV5RMini(ser)
+radio.status_fn = lambda s: print(f"\r  {s.msg} {s.cur}/{s.max}", end="", flush=True)
+radio.sync_in()
+radio.save_mmap("uv5rmini_image.img")
+ser.close()
+# >>> Power cycle the radio <<<
+
+# Step 2: Patch channels, settings, power levels into image
+radio = baofeng_uv17Pro.UV5RMini(None)
+radio.load_mmap("uv5rmini_image.img")
+rf = radio.get_features()
+high = rf.valid_power_levels[0]  # High (36 dBm)
+
+# Program channels from CSV — NOTE: channels are 1-indexed (mem.number = csv_location + 1)
+with open("frequencies.csv") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        ch_num = int(row["Location"])
+        mem = chirp_common.Memory()
+        mem.number = ch_num + 1  # 1-indexed!
+        mem.freq = int(float(row["Frequency"]) * 1000000)
+        mem.name = row["Name"]  # up to 12 chars
+        mem.mode = row["Mode"]
+        # ... set tone, duplex, offset, power ...
+        radio.set_memory(mem)
+
+# Set FRS 1-7 and GMRS 15-22 to high power
+for i in list(range(85, 92)) + list(range(99, 107)):
+    m = radio.get_memory(i + 1)  # 1-indexed
+    m.power = high
+    radio.set_memory(m)
+
+radio.save_mmap("uv5rmini_image.img")
+
+# Step 3: Upload (after power cycle)
+ser = serial.Serial("COM3", baudrate=115200, bytesize=8, parity="N", stopbits=1, timeout=1)
+ser.log = lambda msg: None
+radio = baofeng_uv17Pro.UV5RMini(ser)
+radio.load_mmap("uv5rmini_image.img")
+radio.status_fn = lambda s: print(f"\r  {s.msg} {s.cur}/{s.max}", end="", flush=True)
 radio.sync_out()
 ser.close()
 # >>> Power cycle the radio <<<
@@ -212,17 +278,26 @@ Columns: `Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCod
 - **Work mode**: image offset 0x0E7E-0x0E7F
 - **Critical**: radio addresses = image offsets - 8. CHIRP's `_send_block()` does `addr = i - 0x08`.
 
-### Serial protocol
+### Serial protocol (BF-F8HP / UV-5R)
 - 9600 baud, 8N1, 1s timeout
 - Magic byte handshake to enter clone mode
 - Download: 0x40-byte blocks
 - Upload: 0x10-byte blocks with checksum
 - Radio must be power-cycled between download and upload sessions
 
+### Serial protocol (UV-5R Mini)
+- **115200 baud**, 8N1, 1s timeout (NOT 9600 — will not respond at lower baud rates)
+- Uses UV-17 Pro protocol family (`MSTRING_UV17PROGPS` magic)
+- Image size: 0x8240 bytes (~33KB), much larger than UV-5R family
+- Channels are 1-indexed (1-999), not 0-indexed
+- Serial object needs `ser.log = lambda msg: None` stub (CHIRP calls `radio.pipe.log()`)
+- Radio must be power-cycled between download and upload sessions
+
 ## Radios Flashed
 
 - 1x BF-F8HP (primary, 8W high power)
 - 4x UV-5R (5W high power)
+- 1x UV-5R Mini (5W high power)
 
 All programmed with identical 128-channel layout, English voice, name display, squelch 4.
 
