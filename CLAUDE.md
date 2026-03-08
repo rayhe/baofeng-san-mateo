@@ -297,7 +297,7 @@ Columns: `Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCod
 
 - 1x BF-F8HP (primary, 8W high power)
 - 4x UV-5R (5W high power)
-- 5x UV-5R Mini (5W high power)
+- 6x UV-5R Mini (5W high power)
 
 All programmed with identical 128-channel layout, English voice, name display, squelch 4.
 
