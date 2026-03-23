@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Flash Baofeng UV-5R with frequencies.csv via FTDI USB cable.
+Flash Baofeng BF-F8HP (or UV-5R compatible) with frequencies.csv via FTDI USB cable.
 
 Protocol: 9600 8N1, no flow control.
 Sequence: identify -> download current image -> patch channels -> upload.
+BF-F8HP has 3 power levels (High/Mid/Low) and 128 channels.
 """
 
 import csv
@@ -97,8 +98,27 @@ def encode_tone(mode, row, direction):
 
 # --- Serial protocol ---
 
+# Radio model detection from ident bytes
+RADIO_MODELS = {
+    # ident byte patterns -> (model_name, name_length, power_levels)
+    # BF-F8HP variants have "0520" in the ident
+    "f8hp":  ("BF-F8HP",  7, 3),  # 7-char names, 3 power levels (H/M/L = 0/1/2)
+    "uv5r":  ("UV-5R",    6, 2),  # 6-char names, 2 power levels (H/L = 0/1)
+}
+
+
+def detect_model(ident_bytes):
+    """Detect radio model from identification bytes."""
+    ident_hex = ident_bytes.hex()
+    # BF-F8HP typically has "0520" in bytes 4-5 of ident
+    if b"\x05\x20" in ident_bytes:
+        return RADIO_MODELS["f8hp"]
+    # Default to UV-5R (most conservative: shorter names, 2 power levels)
+    return RADIO_MODELS["uv5r"]
+
+
 def do_ident(ser):
-    """Perform UV-5R handshake. Try multiple magic sequences."""
+    """Perform UV-5R/F8HP handshake. Try multiple magic sequences."""
     for magic in MAGICS:
         ser.reset_input_buffer()
         ser.reset_output_buffer()
@@ -117,8 +137,9 @@ def do_ident(ser):
                 ser.write(b"\x06")
                 confirm = ser.read(1)
                 if confirm == b"\x06":
-                    ident_hex = ident.hex()
-                    print(f"  Radio identified: {ident_hex}")
+                    model_name, name_len, power_levels = detect_model(ident)
+                    print(f"  Radio identified: {ident.hex()} -> {model_name}"
+                          f" (names={name_len}ch, power={power_levels}lvl)")
                     return ident
             # Try reading more bytes (some radios send 12)
             extra = ser.read(4)
@@ -127,8 +148,11 @@ def do_ident(ser):
                 ser.write(b"\x06")
                 confirm = ser.read(1)
                 if confirm == b"\x06":
-                    print(f"  Radio identified (extended): {ident_full.hex()}")
-                    return ident_full[:8]
+                    ident = ident_full[:8]
+                    model_name, name_len, power_levels = detect_model(ident)
+                    print(f"  Radio identified: {ident.hex()} -> {model_name}"
+                          f" (names={name_len}ch, power={power_levels}lvl)")
+                    return ident
         time.sleep(0.5)
 
     raise RuntimeError("Failed to identify radio. Check cable, power, and COM port.")
@@ -233,8 +257,16 @@ def compute_tx_freq(rx_freq, duplex, offset):
     return rx_freq  # simplex
 
 
-def patch_channels(image, csv_path):
-    """Read CSV and patch channel + name data into the image."""
+def patch_channels(image, csv_path, name_len=7, power_levels=3):
+    """Read CSV and patch channel + name data into the image.
+
+    Args:
+        name_len: Max name length (7 for BF-F8HP, 6 for UV-5R)
+        power_levels: 3 for BF-F8HP (H/M/L=0/1/2), 2 for UV-5R (H/L=0/1)
+    """
+    # Low power value: last level in the power table
+    low_power = (power_levels - 1)  # 2 for F8HP, 1 for UV-5R
+
     count = 0
     with open(csv_path, "r") as f:
         reader = csv.DictReader(f)
@@ -268,12 +300,12 @@ def patch_channels(image, csv_path):
             struct.pack_into("<H", image, ch_addr + 10, txtone)
             image[ch_addr + 12] = (is_uhf << 4) & 0xFF  # flags1
             image[ch_addr + 13] = 0x00                    # flags2
-            image[ch_addr + 14] = 0x00                    # flags3 (high power)
+            image[ch_addr + 14] = low_power & 0x03        # flags3: lowest power (RX-only)
             image[ch_addr + 15] = ((wide & 1) << 6) | ((scan & 1) << 2)  # flags4
 
-            # Build name entry
+            # Build name entry (truncate to radio's name length)
             name_addr = NAME_BASE + (ch * 16)
-            name = row.get("Name", "")[:7].upper()
+            name = row.get("Name", "")[:name_len].upper()
             name_bytes = bytearray(name.encode("ascii", errors="replace"))
             while len(name_bytes) < 7:
                 name_bytes.append(0xFF)
@@ -291,7 +323,7 @@ def main():
     csv_path = sys.argv[1] if len(sys.argv) > 1 else "frequencies.csv"
     port = sys.argv[2] if len(sys.argv) > 2 else PORT
 
-    print(f"=== Baofeng UV-5R Flash Tool ===")
+    print(f"=== Baofeng Flash Tool ===")
     print(f"  CSV:  {csv_path}")
     print(f"  Port: {port}")
     print()
@@ -301,7 +333,8 @@ def main():
     try:
         # Step 1: Identify
         print("[1/4] Identifying radio...")
-        do_ident(ser)
+        ident = do_ident(ser)
+        model_name, name_len, power_levels = detect_model(ident)
         print()
 
         # Step 2: Download current image
@@ -317,8 +350,9 @@ def main():
         print()
 
         # Step 3: Patch channels from CSV
-        print(f"[3/4] Patching channels from {csv_path}...")
-        count = patch_channels(image, csv_path)
+        print(f"[3/4] Patching {model_name} channels from {csv_path}...")
+        count = patch_channels(image, csv_path, name_len=name_len,
+                               power_levels=power_levels)
         print(f"  Patched {count} channels")
         print()
 
