@@ -50,6 +50,7 @@ Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPola
 48,GREP-7A,462.675000,+,5.000000,Tone,192.8,192.8,023,NN,FM,5.00,,7a Open SF - 192.8 TX No RX Tone,,,,
 49,GREP-CERT,462.650000,+,5.000000,Tone,77.0,77.0,023,NN,FM,5.00,,WQLS681 AVCERT San Jose - 77.0 PL,,,,
 50,GREP-BEAR,462.675000,+,5.000000,Tone,94.8,94.8,023,NN,FM,5.00,,675 The Bear Santa Cruz County - 94.8 PL,,,,
+51,REP-MO,462.550000,+,5.000000,,88.5,88.5,023,NN,FM,5.00,,GMRS Ch15 Repeater Menlo Oaks,,,,
 53,WX-SFBA,162.400000,,0.000000,,88.5,88.5,023,NN,NFM,5.00,,NOAA Weather KHB49 San Francisco,,,,
 54,WX-SJBA,162.550000,,0.000000,,88.5,88.5,023,NN,NFM,5.00,,NOAA Weather KEC49 San Jose/Monterey,,,,
 55,WX-MARN,162.450000,,0.000000,,88.5,88.5,023,NN,NFM,5.00,,NOAA Weather WWF64 Marine SF/Monterey,,,,
