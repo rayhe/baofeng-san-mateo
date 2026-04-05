@@ -12,6 +12,7 @@ This is a **receive-only / scanner** use case for public safety frequencies. Tra
 frequencies.csv          # CHIRP-compatible CSV, 128 channels (0-127), ready to upload
 flash_chirp.py           # CHIRP-driver-based flasher (working, preferred for BF-F8HP)
 flash_radio.py           # Legacy standalone flasher (BUGGY — do not use, see below)
+send_cw.py               # Send CW (Morse code) via Digirig Mobile + Baofeng
 FREQUENCY_REFERENCE.txt  # Detailed human-readable reference with all frequencies, notes, sources
 README.md                # Project description
 chirp-src/               # CHIRP source checkout (git-ignored, clone separately)
@@ -297,9 +298,46 @@ Columns: `Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCod
 
 - 1x BF-F8HP (primary, 8W high power)
 - 4x UV-5R (5W high power)
-- 6x UV-5R Mini (5W high power)
+- 8x UV-5R Mini (5W high power)
 
 All programmed with identical 128-channel layout, English voice, name display, squelch 4.
+
+## GMRS Callsign
+
+**WSLY991** — FCC GMRS license
+
+## Digirig Mobile (Audio + PTT Interface)
+
+The Digirig Mobile provides USB audio and serial PTT control for transmitting from the PC through the Baofeng.
+
+### Hardware Setup
+
+- **Digirig Mobile** connected via USB-C
+- **Baofeng audio cable** (2-pin Kenwood) from Digirig to radio
+- **Serial port**: COM4 (Silicon Labs CP210x — requires CP210x driver)
+- **Audio output**: PyAudio device index 11 ("Speakers (USB Audio Device)")
+- **Audio input**: PyAudio device index 1 ("Microphone (USB Audio Device)")
+- **PTT**: Asserted via RTS line on COM4
+
+### CP210x Driver Install
+
+If the Digirig serial port doesn't appear, install the Silicon Labs CP210x driver:
+```bash
+# Download and extract
+curl -L -o CP210x_Windows_Drivers.zip "https://www.silabs.com/documents/public/software/CP210x_Universal_Windows_Driver.zip"
+# Install (requires admin)
+pnputil /add-driver CP210x_Drivers/silabser.inf /install
+```
+
+### Sending CW
+
+```bash
+python send_cw.py WSLY991                    # Default: 25 WPM, 700 Hz
+python send_cw.py "WSLY991 CQ CQ" --wpm 20  # Custom speed
+python send_cw.py WSLY991 --tone 800         # Custom tone
+```
+
+The script keys PTT via Digirig serial RTS, plays a CW tone through the Digirig USB audio output, then releases PTT.
 
 ## Sources
 
