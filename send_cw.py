@@ -74,7 +74,7 @@ def build_cw_audio(message, wpm, tone_hz):
 
 
 def send_cw(message, wpm=25, tone_hz=700, serial_port='COM4', audio_index=11):
-    audio_data = generate_silence(0.3) + build_cw_audio(message, wpm, tone_hz) + generate_silence(0.5)
+    audio_data = build_cw_audio(message, wpm, tone_hz) + generate_silence(0.15)
     duration = len(audio_data) / 2 / SAMPLE_RATE
     print(f'{message} @ {tone_hz}Hz {wpm}WPM, {duration:.1f}s')
 
@@ -89,11 +89,11 @@ def send_cw(message, wpm=25, tone_hz=700, serial_port='COM4', audio_index=11):
 
     print('Keying PTT...')
     ser.rts = True
-    time.sleep(0.5)
+    time.sleep(0.4)
 
     print(f'Sending: {message}')
     stream.write(audio_data)
-    time.sleep(0.3)
+    time.sleep(0.1)
 
     ser.rts = False
     print('PTT released.')

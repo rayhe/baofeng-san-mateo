@@ -61,9 +61,8 @@ async def generate_tts(message, voice, rate):
 
 
 def transmit(pcm, serial_port, audio_index):
-    lead = b'\x00\x00' * int(SAMPLE_RATE * 0.3)
-    tail = b'\x00\x00' * int(SAMPLE_RATE * 0.5)
-    audio_data = lead + pcm + tail
+    tail = b'\x00\x00' * int(SAMPLE_RATE * 0.15)
+    audio_data = pcm + tail
 
     ser = serial.Serial(serial_port, baudrate=9600, timeout=1)
     ser.rts = False
@@ -76,11 +75,11 @@ def transmit(pcm, serial_port, audio_index):
 
     print('Keying PTT...')
     ser.rts = True
-    time.sleep(0.5)
+    time.sleep(0.4)
 
     print('Transmitting...')
     stream.write(audio_data)
-    time.sleep(0.3)
+    time.sleep(0.1)
 
     ser.rts = False
     print('PTT released.')
