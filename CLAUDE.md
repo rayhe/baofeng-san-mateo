@@ -13,6 +13,7 @@ frequencies.csv          # CHIRP-compatible CSV, 128 channels (0-127), ready to 
 flash_chirp.py           # CHIRP-driver-based flasher (working, preferred for BF-F8HP)
 flash_radio.py           # Legacy standalone flasher (BUGGY — do not use, see below)
 send_cw.py               # Send CW (Morse code) via Digirig Mobile + Baofeng
+send_voice.py            # Send voice (TTS) via Digirig Mobile + Baofeng
 FREQUENCY_REFERENCE.txt  # Detailed human-readable reference with all frequencies, notes, sources
 README.md                # Project description
 chirp-src/               # CHIRP source checkout (git-ignored, clone separately)
@@ -338,6 +339,17 @@ python send_cw.py WSLY991 --tone 800         # Custom tone
 ```
 
 The script keys PTT via Digirig serial RTS, plays a CW tone through the Digirig USB audio output, then releases PTT.
+
+### Sending Voice (TTS)
+
+```bash
+python send_voice.py                                          # Default: WSLY991 + current time
+python send_voice.py "CQ CQ this is Whiskey Sierra Lima Yankee 9 9 1"
+python send_voice.py --voice en-US-GuyNeural                  # Male voice
+python send_voice.py --rate "+30%"                            # Faster speech
+```
+
+Uses Microsoft Edge neural TTS voices (requires `edge-tts`, `soundfile`, `numpy`). Default voice is `en-US-JennyNeural` (female) at +20% speed.
 
 ## Sources
 
